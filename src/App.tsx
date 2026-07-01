@@ -22,7 +22,9 @@ import {
   ChevronDown,
   Sun,
   Moon,
-  Menu
+  Menu,
+  CloudOff,
+  RefreshCw
 } from 'lucide-react';
 import { Goal, Habit, DailyLog, ScheduleEvent } from './types';
 import {
@@ -38,6 +40,23 @@ import LogsSection from './components/LogsSection';
 import CalendarSection from './components/CalendarSection';
 import ThreeDBackground from './components/ThreeDBackground';
 
+const safeGetItem = (key: string, fallback: string): string => {
+  try {
+    return localStorage.getItem(key) || fallback;
+  } catch (e) {
+    return fallback;
+  }
+};
+
+const safeGetJSON = <T,>(key: string, fallback: T): T => {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch (e) {
+    return fallback;
+  }
+};
+
 export default function App() {
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
@@ -45,12 +64,78 @@ export default function App() {
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
   const [showProfileMenu, setShowProfileMenu] = useState<boolean>(false);
   const [darkMode, setDarkMode] = useState<boolean>(() => {
-    const saved = localStorage.getItem('tracker_theme');
-    return saved ? saved === 'dark' : true;
+    const saved = safeGetItem('tracker_theme', 'dark');
+    return saved === 'dark';
   });
 
+  const [syncStatus, setSyncStatus] = useState<'synced' | 'saving' | 'restricted'>('synced');
+  const [syncMessage, setSyncMessage] = useState<string>('All changes saved to local cache');
+  const syncTimeoutRef = React.useRef<any>(null);
+  const isRestrictedRef = React.useRef<boolean>(false);
+  const isFirstMountRef = React.useRef<boolean>(true);
+
+  // Initialize and check environment storage accessibility
   useEffect(() => {
-    localStorage.setItem('tracker_theme', darkMode ? 'dark' : 'light');
+    try {
+      const testKey = '__aethera_storage_test__';
+      localStorage.setItem(testKey, 'ok');
+      localStorage.removeItem(testKey);
+      isRestrictedRef.current = false;
+      setSyncStatus('synced');
+      setSyncMessage('All data verified and persistent');
+    } catch (e) {
+      isRestrictedRef.current = true;
+      setSyncStatus('restricted');
+      setSyncMessage('Storage restricted: Running in transient mode');
+    }
+
+    // Mark initialization complete after brief delay to avoid triggers on initial mount
+    const timer = setTimeout(() => {
+      isFirstMountRef.current = false;
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const performSave = React.useCallback((key: string, value: string) => {
+    if (isRestrictedRef.current) {
+      setSyncStatus('restricted');
+      setSyncMessage('Storage restricted: Running in transient mode');
+      return;
+    }
+
+    if (isFirstMountRef.current) {
+      return;
+    }
+
+    try {
+      setSyncStatus('saving');
+      setSyncMessage('Saving telemetry updates...');
+
+      localStorage.setItem(key, value);
+
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current);
+      }
+
+      syncTimeoutRef.current = setTimeout(() => {
+        setSyncStatus('synced');
+        setSyncMessage('All changes saved to local cache');
+      }, 700);
+    } catch (e) {
+      isRestrictedRef.current = true;
+      setSyncStatus('restricted');
+      setSyncMessage('Storage restricted: Running in transient mode');
+    }
+  }, []);
+
+  useEffect(() => {
+    performSave('tracker_theme', darkMode ? 'dark' : 'light');
     const shell = document.getElementById('app-shell');
     if (shell) {
       if (darkMode) {
@@ -59,85 +144,70 @@ export default function App() {
         shell.classList.add('light-mode');
       }
     }
-  }, [darkMode]);
+  }, [darkMode, performSave]);
 
   // Load state from localStorage or fallback to initial high-fidelity mock data
-  const [goals, setGoals] = useState<Goal[]>(() => {
-    const saved = localStorage.getItem('tracker_goals');
-    return saved ? JSON.parse(saved) : INITIAL_GOALS;
-  });
-
-  const [habits, setHabits] = useState<Habit[]>(() => {
-    const saved = localStorage.getItem('tracker_habits');
-    return saved ? JSON.parse(saved) : INITIAL_HABITS;
-  });
-
-  const [logs, setLogs] = useState<DailyLog[]>(() => {
-    const saved = localStorage.getItem('tracker_logs');
-    return saved ? JSON.parse(saved) : INITIAL_LOGS;
-  });
-
-  const [events, setEvents] = useState<ScheduleEvent[]>(() => {
-    const saved = localStorage.getItem('tracker_events');
-    return saved ? JSON.parse(saved) : INITIAL_EVENTS;
-  });
+  const [goals, setGoals] = useState<Goal[]>(() => safeGetJSON('tracker_goals', INITIAL_GOALS));
+  const [habits, setHabits] = useState<Habit[]>(() => safeGetJSON('tracker_habits', INITIAL_HABITS));
+  const [logs, setLogs] = useState<DailyLog[]>(() => safeGetJSON('tracker_logs', INITIAL_LOGS));
+  const [events, setEvents] = useState<ScheduleEvent[]>(() => safeGetJSON('tracker_events', INITIAL_EVENTS));
 
   // User Customizable Settings (Enterprise Quality)
   const [userName, setUserName] = useState<string>(() => {
-    return localStorage.getItem('tracker_user_name') || 'Vishnu Virat';
+    return safeGetItem('tracker_user_name', 'Vishnu Virat');
   });
   const [userEmail, setUserEmail] = useState<string>(() => {
-    return localStorage.getItem('tracker_user_email') || 'vishnuvirat709@gmail.com';
+    return safeGetItem('tracker_user_email', 'vishnuvirat709@gmail.com');
   });
   const [waterTarget, setWaterTarget] = useState<number>(() => {
-    const saved = localStorage.getItem('tracker_water_target');
-    return saved ? Number(saved) : 2000;
+    const saved = safeGetItem('tracker_water_target', '2000');
+    return Number(saved);
   });
   const [stepsTarget, setStepsTarget] = useState<number>(() => {
-    const saved = localStorage.getItem('tracker_steps_target');
-    return saved ? Number(saved) : 10000;
+    const saved = safeGetItem('tracker_steps_target', '10000');
+    return Number(saved);
   });
   const [sleepTarget, setSleepTarget] = useState<number>(() => {
-    const saved = localStorage.getItem('tracker_sleep_target');
-    return saved ? Number(saved) : 8;
+    const saved = safeGetItem('tracker_sleep_target', '8');
+    return Number(saved);
   });
 
   // Persist state changes in localStorage
   useEffect(() => {
-    localStorage.setItem('tracker_goals', JSON.stringify(goals));
-  }, [goals]);
+    performSave('tracker_goals', JSON.stringify(goals));
+  }, [goals, performSave]);
 
   useEffect(() => {
-    localStorage.setItem('tracker_habits', JSON.stringify(habits));
-  }, [habits]);
+    performSave('tracker_habits', JSON.stringify(habits));
+  }, [habits, performSave]);
 
   useEffect(() => {
-    localStorage.setItem('tracker_logs', JSON.stringify(logs));
-  }, [logs]);
+    performSave('tracker_logs', JSON.stringify(logs));
+  }, [logs, performSave]);
 
   useEffect(() => {
-    localStorage.setItem('tracker_events', JSON.stringify(events));
-  }, [events]);
+    performSave('tracker_events', JSON.stringify(events));
+  }, [events, performSave]);
 
   useEffect(() => {
-    localStorage.setItem('tracker_user_name', userName);
-  }, [userName]);
+    performSave('tracker_user_name', userName);
+  }, [userName, performSave]);
 
   useEffect(() => {
-    localStorage.setItem('tracker_user_email', userEmail);
-  }, [userEmail]);
+    performSave('tracker_user_email', userEmail);
+  }, [userEmail, performSave]);
 
   useEffect(() => {
-    localStorage.setItem('tracker_water_target', String(waterTarget));
-  }, [waterTarget]);
+    performSave('tracker_water_target', String(waterTarget));
+  }, [waterTarget, performSave]);
 
   useEffect(() => {
-    localStorage.setItem('tracker_steps_target', String(stepsTarget));
-  }, [stepsTarget]);
+    performSave('tracker_steps_target', String(stepsTarget));
+  }, [stepsTarget, performSave]);
 
   useEffect(() => {
-    localStorage.setItem('tracker_sleep_target', String(sleepTarget));
-  }, [sleepTarget]);
+    performSave('tracker_sleep_target', String(sleepTarget));
+  }, [sleepTarget, performSave]);
 
   // Dynamic system notifications generated based on habits & wellness logs
   const dynamicNotifications = React.useMemo(() => {
@@ -740,6 +810,41 @@ export default function App() {
 
           {/* Notifications and Profile Widgets */}
           <div className="flex items-center gap-3 relative">
+            
+            {/* Sync Status Indicator Capsule */}
+            <div
+              className={`flex items-center gap-2 px-2.5 py-1.5 rounded-xl border bg-slate-950 text-[10px] font-bold font-mono select-none cursor-help transition-all ${
+                syncStatus === 'saving'
+                  ? 'border-cyan-500/30 text-cyan-400 bg-cyan-950/10 shadow-sm shadow-cyan-500/5'
+                  : syncStatus === 'synced'
+                  ? 'border-emerald-500/20 text-slate-300 hover:text-white bg-slate-900/30'
+                  : 'border-amber-500/30 text-amber-500 bg-amber-950/10 shadow-sm shadow-amber-500/5 animate-pulse'
+              }`}
+              title={syncMessage}
+            >
+              {syncStatus === 'saving' && (
+                <>
+                  <RefreshCw className="w-3 h-3 text-cyan-400 animate-spin shrink-0" />
+                  <span className="hidden sm:inline-block">TELEMETRY SAVING</span>
+                  <span className="inline-block sm:hidden">SAVING</span>
+                </>
+              )}
+              {syncStatus === 'synced' && (
+                <>
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-md shadow-emerald-500/50 shrink-0" />
+                  <span className="hidden sm:inline-block text-slate-400">TELEMETRY SYNCED</span>
+                  <span className="inline-block sm:hidden text-slate-400">SYNCED</span>
+                </>
+              )}
+              {syncStatus === 'restricted' && (
+                <>
+                  <CloudOff className="w-3 h-3 text-amber-500 shrink-0" />
+                  <span className="hidden sm:inline-block">TRANSIENT MODE</span>
+                  <span className="inline-block sm:hidden">TRANSIENT</span>
+                </>
+              )}
+            </div>
+
             {/* Theme Toggle Trigger */}
             <button
               onClick={() => setDarkMode(!darkMode)}
