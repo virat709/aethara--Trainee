@@ -21,7 +21,8 @@ import {
   Droplet,
   ChevronDown,
   Sun,
-  Moon
+  Moon,
+  Menu
 } from 'lucide-react';
 import { Goal, Habit, DailyLog, ScheduleEvent } from './types';
 import {
@@ -39,6 +40,7 @@ import ThreeDBackground from './components/ThreeDBackground';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<string>('dashboard');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [globalSearch, setGlobalSearch] = useState<string>('');
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
   const [showProfileMenu, setShowProfileMenu] = useState<boolean>(false);
@@ -584,28 +586,48 @@ export default function App() {
       {/* Interactive 3D Background Engine */}
       <ThreeDBackground darkMode={darkMode} />
 
+      {/* Mobile Backdrop Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Side Navigation Rail */}
-      <aside className="w-full md:w-64 bg-slate-950 shrink-0 flex flex-col justify-between border-r border-slate-900 shadow-2xl relative z-10">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-950 flex flex-col justify-between border-r border-slate-900 shadow-2xl transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      } shrink-0`}>
         <div className="p-6 space-y-8">
           
           {/* Main Logo Header */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-slate-800/80 p-0.5 bg-gradient-to-tr from-cyan-500 via-blue-600 to-purple-600 shrink-0">
-              <img
-                src="/src/assets/images/app_logo_1782907414969.jpg"
-                alt="Aethera Logo"
-                className="w-full h-full object-cover rounded-[10px]"
-                referrerPolicy="no-referrer"
-              />
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-slate-800/80 p-0.5 bg-gradient-to-tr from-cyan-500 via-blue-600 to-purple-600 shrink-0">
+                <img
+                  src="/src/assets/images/app_logo_1782907414969.jpg"
+                  alt="Aethera Logo"
+                  className="w-full h-full object-cover rounded-[10px]"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div>
+                <h2 className="font-display font-extrabold text-base tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-300">
+                  Aethera
+                </h2>
+                <span className="text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest mt-1 block">
+                  SaaS Wellness VM
+                </span>
+              </div>
             </div>
-            <div>
-              <h2 className="font-display font-extrabold text-base tracking-tight leading-none text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-300">
-                Aethera
-              </h2>
-              <span className="text-[9px] text-cyan-400 font-extrabold uppercase tracking-widest mt-1 block">
-                SaaS Wellness VM
-              </span>
-            </div>
+
+            {/* Mobile close button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="md:hidden p-1.5 rounded-lg border border-slate-850 text-slate-400 hover:text-white hover:border-slate-700 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Navigation Links */}
@@ -619,6 +641,7 @@ export default function App() {
                   onClick={() => {
                     setCurrentTab(item.id);
                     setGlobalSearch('');
+                    setIsMobileMenuOpen(false);
                   }}
                   className={`w-full px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-between cursor-pointer text-left group relative ${
                     isActive
@@ -677,8 +700,17 @@ export default function App() {
       <div className="flex-1 flex flex-col min-w-0 relative z-10">
         
         {/* Sticky Header Top Navigation (Linear / Vercel style) */}
-        <header className="sticky top-0 bg-cyber-dark/80 backdrop-blur-xl border-b border-slate-900/80 p-4 flex items-center justify-between gap-4 z-50">
+        <header className="sticky top-0 bg-cyber-dark/80 backdrop-blur-xl border-b border-slate-900/80 p-3 sm:p-4 flex items-center justify-between gap-2 sm:gap-4 z-50">
           
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="md:hidden p-2 rounded-xl border border-slate-800 bg-slate-950 text-slate-400 hover:text-white hover:border-slate-700 cursor-pointer flex items-center justify-center shrink-0"
+            title="Open Menu"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
+
           {/* Active section info */}
           <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 font-medium font-mono">
             <span>workspace</span>
@@ -748,7 +780,7 @@ export default function App() {
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 mt-2.5 w-80 bg-slate-950/95 border border-slate-800 rounded-2xl shadow-2xl p-4 space-y-3 z-50 backdrop-blur-xl"
+                    className="absolute right-0 mt-2.5 w-80 max-w-[calc(100vw-2rem)] bg-slate-950/95 border border-slate-800 rounded-2xl shadow-2xl p-4 space-y-3 z-50 backdrop-blur-xl"
                   >
                     <div className="flex justify-between items-center pb-2 border-b border-slate-900">
                       <span className="text-xs font-bold text-white font-display">System Alerts</span>
@@ -799,7 +831,7 @@ export default function App() {
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 mt-2.5 w-56 bg-slate-950/95 border border-slate-800 rounded-2xl shadow-2xl p-3 space-y-2 z-50 backdrop-blur-xl text-left"
+                    className="absolute right-0 mt-2.5 w-56 max-w-[calc(100vw-2rem)] bg-slate-950/95 border border-slate-800 rounded-2xl shadow-2xl p-3 space-y-2 z-50 backdrop-blur-xl text-left"
                   >
                     <div className="px-2 py-1.5">
                       <p className="text-xs font-bold text-white leading-none">{userName}</p>
@@ -836,7 +868,7 @@ export default function App() {
         </header>
 
         {/* Main Content Pane */}
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto w-full max-w-7xl mx-auto space-y-8">
+        <main className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto w-full max-w-7xl mx-auto space-y-8">
           
           {/* Render Active Module with Elegant Transition */}
           <AnimatePresence mode="wait">
