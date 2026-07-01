@@ -71,7 +71,7 @@ export default function GoalsSection({
 
   const handleQuickIncrement = (id: string, current: number, target: number, unit: string) => {
     let increment = 1;
-    if (unit.toLowerCase() === '$' || unit.toLowerCase() === 'usd' || unit.toLowerCase() === 'credits') increment = 50;
+    if (unit.toLowerCase() === '$' || unit.toLowerCase() === '₹' || unit.toLowerCase() === 'usd' || unit.toLowerCase() === 'inr' || unit.toLowerCase() === 'credits') increment = 50;
     else if (unit.toLowerCase() === 'ml') increment = 250;
     else if (unit.toLowerCase() === 'steps') increment = 1000;
     else if (unit.toLowerCase() === 'km') increment = 2;
@@ -204,7 +204,7 @@ export default function GoalsSection({
                 <label className="text-xs font-semibold text-slate-400">Unit of Measurement</label>
                 <input
                   type="text"
-                  placeholder="e.g. km, books, $, times"
+                  placeholder="e.g. km, books, ₹, times"
                   value={unit}
                   onChange={(e) => setUnit(e.target.value)}
                   className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-hidden focus:border-cyan-500/50"

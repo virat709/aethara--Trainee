@@ -24,14 +24,17 @@ import {
   Moon,
   Menu,
   CloudOff,
-  RefreshCw
+  RefreshCw,
+  Wallet
 } from 'lucide-react';
-import { Goal, Habit, DailyLog, ScheduleEvent } from './types';
+import { Goal, Habit, DailyLog, ScheduleEvent, Transaction, Budget } from './types';
 import {
   INITIAL_GOALS,
   INITIAL_HABITS,
   INITIAL_LOGS,
   INITIAL_EVENTS,
+  INITIAL_TRANSACTIONS,
+  INITIAL_BUDGETS,
 } from './data';
 import Dashboard from './components/Dashboard';
 import GoalsSection from './components/GoalsSection';
@@ -39,6 +42,7 @@ import HabitsSection from './components/HabitsSection';
 import LogsSection from './components/LogsSection';
 import CalendarSection from './components/CalendarSection';
 import ThreeDBackground from './components/ThreeDBackground';
+import FinancesSection from './components/FinancesSection';
 
 const safeGetItem = (key: string, fallback: string): string => {
   try {
@@ -151,6 +155,8 @@ export default function App() {
   const [habits, setHabits] = useState<Habit[]>(() => safeGetJSON('tracker_habits', INITIAL_HABITS));
   const [logs, setLogs] = useState<DailyLog[]>(() => safeGetJSON('tracker_logs', INITIAL_LOGS));
   const [events, setEvents] = useState<ScheduleEvent[]>(() => safeGetJSON('tracker_events', INITIAL_EVENTS));
+  const [transactions, setTransactions] = useState<Transaction[]>(() => safeGetJSON('tracker_transactions', INITIAL_TRANSACTIONS));
+  const [budgets, setBudgets] = useState<Budget[]>(() => safeGetJSON('tracker_budgets', INITIAL_BUDGETS));
 
   // User Customizable Settings (Enterprise Quality)
   const [userName, setUserName] = useState<string>(() => {
@@ -208,6 +214,14 @@ export default function App() {
   useEffect(() => {
     performSave('tracker_sleep_target', String(sleepTarget));
   }, [sleepTarget, performSave]);
+
+  useEffect(() => {
+    performSave('tracker_transactions', JSON.stringify(transactions));
+  }, [transactions, performSave]);
+
+  useEffect(() => {
+    performSave('tracker_budgets', JSON.stringify(budgets));
+  }, [budgets, performSave]);
 
   // Dynamic system notifications generated based on habits & wellness logs
   const dynamicNotifications = React.useMemo(() => {
@@ -416,6 +430,34 @@ export default function App() {
     setEvents((prev) => prev.filter((e) => e.id !== id));
   };
 
+  // Finance updates
+  const handleAddTransaction = (newTx: Omit<Transaction, 'id'>) => {
+    const tx: Transaction = {
+      ...newTx,
+      id: `t_${Date.now()}`
+    };
+    setTransactions((prev) => [tx, ...prev]);
+  };
+
+  const handleDeleteTransaction = (id: string) => {
+    setTransactions((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const handleClearFinances = () => {
+    setTransactions([]);
+  };
+
+  const handleUpdateBudget = (category: string, limit: number) => {
+    setBudgets((prev) => {
+      const exists = prev.some(b => b.category === category);
+      if (exists) {
+        return prev.map(b => b.category === category ? { ...b, limit } : b);
+      } else {
+        return [...prev, { category, limit }];
+      }
+    });
+  };
+
   // Reset or flush local changes to restore the high-fidelity template states
   const handleRestoreTemplateData = () => {
     if (
@@ -427,6 +469,8 @@ export default function App() {
       setHabits(INITIAL_HABITS);
       setLogs(INITIAL_LOGS);
       setEvents(INITIAL_EVENTS);
+      setTransactions(INITIAL_TRANSACTIONS);
+      setBudgets(INITIAL_BUDGETS);
       setWaterTarget(2000);
       setStepsTarget(10000);
       setSleepTarget(8);
@@ -436,6 +480,8 @@ export default function App() {
       localStorage.removeItem('tracker_habits');
       localStorage.removeItem('tracker_logs');
       localStorage.removeItem('tracker_events');
+      localStorage.removeItem('tracker_transactions');
+      localStorage.removeItem('tracker_budgets');
       localStorage.removeItem('tracker_water_target');
       localStorage.removeItem('tracker_steps_target');
       localStorage.removeItem('tracker_sleep_target');
@@ -505,6 +551,18 @@ export default function App() {
             onAddEvent={handleAddEvent}
             onToggleEventComplete={handleToggleEventComplete}
             onDeleteEvent={handleDeleteEvent}
+            searchTerm={globalSearch}
+          />
+        );
+      case 'finances':
+        return (
+          <FinancesSection
+            transactions={transactions}
+            budgets={budgets}
+            onAddTransaction={handleAddTransaction}
+            onDeleteTransaction={handleDeleteTransaction}
+            onUpdateBudget={handleUpdateBudget}
+            onClearFinances={handleClearFinances}
             searchTerm={globalSearch}
           />
         );
@@ -647,6 +705,7 @@ export default function App() {
     { id: 'habits', label: 'Habits', icon: Flame },
     { id: 'logs', label: 'Daily Logs', icon: Activity },
     { id: 'calendar', label: 'Scheduler', icon: Calendar },
+    { id: 'finances', label: 'Finances', icon: Wallet },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 

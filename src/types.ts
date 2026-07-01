@@ -1,5 +1,20 @@
 export type GoalCategory = 'health' | 'work' | 'personal' | 'finance' | 'other';
 
+export interface Transaction {
+  id: string;
+  title: string;
+  amount: number;
+  type: 'income' | 'expense';
+  category: string;
+  date: string; // YYYY-MM-DD
+  notes?: string;
+}
+
+export interface Budget {
+  category: string;
+  limit: number;
+}
+
 export interface Goal {
   id: string;
   title: string;

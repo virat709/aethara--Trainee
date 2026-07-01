@@ -1,4 +1,4 @@
-import { Goal, Habit, DailyLog, ScheduleEvent } from './types';
+import { Goal, Habit, DailyLog, ScheduleEvent, Transaction, Budget } from './types';
 
 export const INITIAL_GOALS: Goal[] = [
   {
@@ -19,7 +19,7 @@ export const INITIAL_GOALS: Goal[] = [
     category: 'finance',
     targetValue: 500,
     currentValue: 350,
-    unit: '$',
+    unit: '₹',
     period: 'monthly',
     completed: false,
     createdAt: new Date('2026-06-01T08:00:00Z').toISOString(),
@@ -268,4 +268,108 @@ export const INITIAL_EVENTS: ScheduleEvent[] = [
     notes: 'Adjust savings targets for July.',
     completed: true
   }
+];
+
+export const INITIAL_TRANSACTIONS: Transaction[] = [
+  {
+    id: 't1',
+    title: 'Monthly Salary Credit',
+    amount: 4500,
+    type: 'income',
+    category: 'Salary',
+    date: '2026-07-01',
+    notes: 'Primary workstation salary credit'
+  },
+  {
+    id: 't2',
+    title: 'Monthly Apartment Rent',
+    amount: 1450,
+    type: 'expense',
+    category: 'Housing',
+    date: '2026-07-01',
+    notes: 'July Rent payment auto-debit'
+  },
+  {
+    id: 't3',
+    title: 'Freelance Design Project',
+    amount: 650,
+    type: 'income',
+    category: 'Freelance',
+    date: '2026-06-28',
+    notes: 'Mobile app UI mockup project'
+  },
+  {
+    id: 't4',
+    title: 'Whole Foods Grocery Run',
+    amount: 145.20,
+    type: 'expense',
+    category: 'Groceries',
+    date: '2026-06-30',
+    notes: 'Weekly pantry restocking'
+  },
+  {
+    id: 't5',
+    title: 'Electric & Gas Utility Bill',
+    amount: 112.40,
+    type: 'expense',
+    category: 'Utilities',
+    date: '2026-06-29',
+    notes: 'Power grid monthly payment'
+  },
+  {
+    id: 't6',
+    title: 'Friday Dinner with Friends',
+    amount: 85.50,
+    type: 'expense',
+    category: 'Dining Out',
+    date: '2026-06-26',
+    notes: 'Downtown sushi spot'
+  },
+  {
+    id: 't7',
+    title: 'Premium Cloud Storage Subscription',
+    amount: 15.00,
+    type: 'expense',
+    category: 'Subscriptions',
+    date: '2026-06-27',
+    notes: 'Dev resources storage'
+  },
+  {
+    id: 't8',
+    title: 'Gas Station Fuel',
+    amount: 45.00,
+    type: 'expense',
+    category: 'Transport',
+    date: '2026-06-28',
+    notes: 'Car tank refill'
+  },
+  {
+    id: 't9',
+    title: 'Dividend Payout',
+    amount: 42.50,
+    type: 'income',
+    category: 'Investments',
+    date: '2026-06-25',
+    notes: 'Quarterly ETF payout'
+  },
+  {
+    id: 't10',
+    title: 'Movie Tickets',
+    amount: 32.00,
+    type: 'expense',
+    category: 'Entertainment',
+    date: '2026-06-27',
+    notes: 'IMAX Sci-fi movie night'
+  }
+];
+
+export const INITIAL_BUDGETS: Budget[] = [
+  { category: 'Housing', limit: 1500 },
+  { category: 'Groceries', limit: 400 },
+  { category: 'Dining Out', limit: 250 },
+  { category: 'Utilities', limit: 180 },
+  { category: 'Subscriptions', limit: 80 },
+  { category: 'Transport', limit: 150 },
+  { category: 'Entertainment', limit: 120 },
+  { category: 'Other', limit: 200 }
 ];
