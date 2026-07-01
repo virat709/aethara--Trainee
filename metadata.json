@@ -1,0 +1,6 @@
+{
+  "name": "Daily Life Tracker",
+  "description": "A comprehensive daily life tracker to set goals, track habit streaks, log manual entry logs, and manage scheduling with an interactive calendar and insightful visualizations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

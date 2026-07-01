@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Exo 2", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  
+  --color-brand-cyan: #06b6d4;
+  --color-brand-purple: #a855f7;
+  --color-brand-blue: #3b82f6;
+  --color-cyber-dark: #090a16;
+  --color-cyber-card: #121324;
+}
+
+/* Futuristic italicized display font overrides */
+.font-display {
+  font-family: "Exo 2", sans-serif !important;
+  font-style: italic !important;
+  letter-spacing: -0.01em !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Exo 2", sans-serif !important;
+  font-style: italic !important;
+  letter-spacing: -0.015em !important;
+}
+
+/* Custom premium styles */
+.neon-glow-cyan {
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+}
+
+.neon-glow-purple {
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.15);
+}
+
+.glass-panel {
+  background: rgba(18, 19, 36, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Custom Scrollbar for premium feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(9, 10, 22, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.2);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.4);
+}
+
+/* Light Mode styling rules when .light-mode is applied */
+.light-mode {
+  background-color: #f8fafc !important;
+  color: #334155 !important;
+}
+
+/* Base override for backgrounds in light mode */
+.light-mode .bg-cyber-dark,
+.light-mode .bg-cyber-dark\/80 {
+  background-color: #f1f5f9 !important;
+}
+
+.light-mode .bg-slate-950,
+.light-mode .bg-slate-950\/95 {
+  background-color: #ffffff !important;
+}
+
+.light-mode .bg-slate-900,
+.light-mode .bg-slate-900\/50,
+.light-mode .bg-slate-900\/40,
+.light-mode .bg-slate-900\/30,
+.light-mode .bg-slate-950\/20,
+.light-mode .bg-slate-950\/40 {
+  background-color: #f8fafc !important;
+}
+
+/* Glass panel light theme override */
+.light-mode .glass-panel {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03), 0 8px 10px -6px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Header style override */
+.light-mode header {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(148, 163, 184, 0.15) !important;
+}
+
+/* Text overrides */
+.light-mode .text-white,
+.light-mode .text-slate-100,
+.light-mode .text-slate-200 {
+  color: #0f172a !important;
+}
+
+.light-mode .text-slate-300,
+.light-mode .text-slate-400 {
+  color: #475569 !important;
+}
+
+.light-mode .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Border overrides */
+.light-mode .border-slate-900,
+.light-mode .border-slate-900\/80,
+.light-mode .border-slate-900\/60,
+.light-mode .border-slate-800,
+.light-mode .border-slate-800\/80,
+.light-mode .border-slate-800\/60,
+.light-mode .border-slate-850,
+.light-mode .border-slate-850\/40,
+.light-mode .border-slate-850\/60,
+.light-mode .border-slate-950 {
+  border-color: rgba(148, 163, 184, 0.15) !important;
+}
+
+/* Gradient logo translation for high contrast */
+.light-mode .from-white {
+  --tw-gradient-from: #090a16 !important;
+}
+.light-mode .via-slate-100 {
+  --tw-gradient-to: #1e293b !important;
+  --tw-gradient-stops: var(--tw-gradient-from), #1e293b !important;
+}
+.light-mode .to-slate-300 {
+  --tw-gradient-to: #475569 !important;
+}
+
+/* Sidebar navigation background gradients translation */
+.light-mode .from-cyan-950\/40 {
+  --tw-gradient-from: rgba(6, 182, 212, 0.08) !important;
+}
+.light-mode .to-indigo-950\/40 {
+  --tw-gradient-to: rgba(99, 102, 241, 0.08) !important;
+}
+
+/* Badges / telemetry indicators contrast boost */
+.light-mode .bg-cyan-950 {
+  background-color: rgba(6, 182, 212, 0.1) !important;
+}
+.light-mode .text-cyan-400 {
+  color: #0891b2 !important;
+}
+.light-mode .border-cyan-800\/30,
+.light-mode .border-cyan-800\/40 {
+  border-color: rgba(6, 182, 212, 0.25) !important;
+}
+
+.light-mode .bg-purple-950 {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+}
+.light-mode .text-purple-400 {
+  color: #7c3aed !important;
+}
+.light-mode .border-purple-800\/40,
+.light-mode .border-purple-900\/30 {
+  border-color: rgba(168, 85, 247, 0.25) !important;
+}
+
+.light-mode .bg-emerald-950 {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+}
+.light-mode .text-emerald-400 {
+  color: #059669 !important;
+}
+
+.light-mode .bg-rose-500\/10 {
+  background-color: rgba(244, 63, 94, 0.1) !important;
+}
+.light-mode .text-rose-400 {
+  color: #e11d48 !important;
+}
+
+.light-mode .bg-amber-500\/10 {
+  background-color: rgba(245, 158, 11, 0.1) !important;
+}
+.light-mode .text-amber-400 {
+  color: #d97706 !important;
+}
+
+/* Form element styles */
+.light-mode input[type="text"],
+.light-mode input[type="date"],
+.light-mode input[type="time"],
+.light-mode textarea,
+.light-mode select {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Hover overrides */
+.light-mode .hover\:bg-slate-900:hover,
+.light-mode .hover\:bg-slate-900\/40:hover,
+.light-mode .hover\:bg-slate-800:hover,
+.light-mode .hover\:bg-slate-800\/80:hover {
+  background-color: #f1f5f9 !important;
+}
+
+.light-mode .hover\:text-white:hover {
+  color: #0f172a !important;
+}
+
+/* Calendar styling updates */
+.light-mode .bg-cyan-950\/30 {
+  background-color: rgba(6, 182, 212, 0.08) !important;
+}
+
+/* Slider updates */
+.light-mode input[type="range"] {
+  background-color: #e2e8f0 !important;
+}
+
+/* Custom Scrollbar */
+.light-mode ::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.5) !important;
+}
+.light-mode ::-webkit-scrollbar-thumb {
+  background: rgba(6, 182, 212, 0.2) !important;
+}
+.light-mode ::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.4) !important;
+}
+
+
